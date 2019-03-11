@@ -1,0 +1,42 @@
+name: vegetation_health
+channels:
+  - pytorch
+  - anaconda
+  - defaults
+dependencies:
+  - blas=1.0
+  - ca-certificates=2019.1.23
+  - intel-openmp=2019.1
+  - libgfortran=3.0.1
+  - mkl=2019.1
+  - mkl_fft=1.0.10
+  - mkl_random=1.0.2
+  - numpy=1.16.2
+  - numpy-base=1.16.2
+  - openssl=1.1.1
+  - pandas=0.24.1
+  - python-dateutil=2.8.0
+  - pytz=2018.9
+  - six=1.12.0
+  - xarray=0.11.3
+  - certifi=2019.3.9
+  - cffi=1.12.2
+  - libcxx=4.0.1
+  - libcxxabi=4.0.1
+  - libedit=3.1.20181209
+  - libffi=3.2.1
+  - ncurses=6.1
+  - ninja=1.8.2
+  - pip=19.0.3
+  - pycparser=2.19
+  - python=3.6.8
+  - readline=7.0
+  - setuptools=40.8.0
+  - sqlite=3.26.0
+  - tk=8.6.8
+  - wheel=0.33.1
+  - xz=5.2.4
+  - zlib=1.2.11
+  - pytorch=1.0.1
+  - pip:
+    - torch==1.0.1.post2
