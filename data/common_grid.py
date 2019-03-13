@@ -9,7 +9,14 @@ NOTES:
     [lst_day, lst_night, lst_mean, lst_mean, evap, baresoil_evap, pet, transp,
     surface_sm, rootzone_sm, sm, precip, ndvi, evi]
 
-- East Africa is defined here as 
+- East Africa is defined here as the area of the original .nc file (spi_spei.nc)
+    lat min - lat max : -4.9750023 15.174995
+    lon min - lon max : 32.524994 48.274994
+    BoundingBox(left, bottom, right, top)
+        (32.524994, -4.9750023, 15.174995, 48.274994)
+
+- Time Range
+    2010-01-01 : 2017-01-01
 """
 
 import xarray as xr
@@ -18,7 +25,7 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 import pandas as pd
-import tqdm
+import tqdm # for progress-bars
 import click
 import warnings
 
@@ -34,6 +41,7 @@ def pickle_obj(obj, filename):
     pickle.dump(obj, output)
 
     return
+
 
 def read_pickle_df(filepath):
   """ read pickled object
@@ -282,10 +290,6 @@ def check_other_netcdfs(*other_netcdfs):
         if isinstance(xr_obj, xr.core.dataarray.DataArray):
             assert xr_obj.name != None, f"All dataarrays must be named! Dataarray #{i+1} not named"
     return
-
-
-
-
 
 
 def read_files(files):
