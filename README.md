@@ -15,3 +15,15 @@ Notes about the data:
 
 - Time Range
     2010-01-01 : 2017-01-01
+
+## Pipeline
+
+[Python Fire](https://github.com/google/python-fire) is used to generate a CLI.
+
+### Data cleaning
+
+Normalize values from the original csv file, remove null values, add a year series.
+
+```bash
+python run.py clean
+```
