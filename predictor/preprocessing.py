@@ -4,6 +4,7 @@ from pathlib import Path
 
 KEY_COLS = ['lat', 'lon', 'month', 'year']
 VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'spi', 'spei', 'ndvi', 'evi']
+TARGET_COL = 'ndvi'
 
 
 class CSVCleaner:
@@ -38,6 +39,8 @@ class CSVCleaner:
     def process(self, normalizing_percentile=95):
 
         data = self.readfile()
+
+        data['target'] = data[TARGET_COL]
 
         for col in VALUE_COLS:
             print(f'Normalizing {col}')

@@ -17,12 +17,12 @@ class RunTask:
 
     @staticmethod
     def engineer(cleaned_data='data/processed/cleaned_data.csv',
-                 arrays='data/processed/arrays', target_key='ndvi'):
+                 arrays='data/processed/arrays'):
 
         cleaned_data, arrays = Path(cleaned_data), Path(arrays)
 
         engineer = Engineer(cleaned_data, arrays)
-        engineer.process(target_key)
+        engineer.process()
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
-from .preprocessing import VALUE_COLS
+from .preprocessing import VALUE_COLS, TARGET_COL
 
 
 class Engineer:
@@ -21,7 +21,7 @@ class Engineer:
     def readfile(self):
         return pd.read_csv(self.cleaned_data_path)
 
-    def process(self, target_key='ndvi'):
+    def process(self):
 
         data = self.readfile()
 
@@ -40,7 +40,7 @@ class Engineer:
                 subgroup = subgroup.sort_values(by='month', ascending=True)
 
                 x = subgroup[:-1][VALUE_COLS].values
-                y = subgroup.iloc[-1][target_key]
+                y = subgroup.iloc[-1]['target']
 
                 latlons.append(latlon_np)
                 years.append(year)
