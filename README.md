@@ -27,3 +27,11 @@ Normalize values from the original csv file, remove null values, add a year seri
 ```bash
 python run.py clean
 ```
+
+### Data Processing
+
+Turn the CSV into `numpy` arrays which can be input into the model.
+
+```bash
+python run.py engineer
+```

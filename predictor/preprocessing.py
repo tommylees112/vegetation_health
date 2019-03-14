@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
+KEY_COLS = ['lat', 'lon', 'month', 'year']
+VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'spi', 'spei', 'ndvi', 'evi']
+
 
 class CSVCleaner:
     """Clean the input data, by removing nan (or encoded-as-nan) values,
@@ -13,10 +16,6 @@ class CSVCleaner:
 
         self.csv_path = raw_csv
         self.processed_csv = processed_csv
-
-        self.key_cols = ['lat', 'lon', 'month', 'year']
-        self.value_cols = ['lst_night', 'lst_day', 'precip', 'sm',
-                           'spi', 'spei', 'ndvi', 'evi']
 
     def readfile(self):
         data = pd.read_csv(self.csv_path).dropna(how='any', axis=0)
@@ -30,7 +29,7 @@ class CSVCleaner:
             # for the lst_cols, missing data is coded as 200
             data = data[data[col] != 200]
 
-        return_cols = self.key_cols + self.value_cols
+        return_cols = KEY_COLS + VALUE_COLS
 
         print(f'Loaded {len(data)} rows!')
 
@@ -40,7 +39,7 @@ class CSVCleaner:
 
         data = self.readfile()
 
-        for col in self.value_cols:
+        for col in VALUE_COLS:
             print(f'Normalizing {col}')
             data[col] = self.normalize(data[col], normalizing_percentile)
 
