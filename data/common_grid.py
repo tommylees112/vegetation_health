@@ -1,5 +1,5 @@
 """
-File for putting netcdf (.nc) files onto a common grid. This means that the
+Script for putting netcdf (.nc) files onto a common grid. This means that the
  location, timesteps and resolution of the data is now the same. This makes
  working with the data a lot simpler!
 
