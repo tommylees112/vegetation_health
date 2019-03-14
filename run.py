@@ -2,6 +2,7 @@ import fire
 from pathlib import Path
 
 from predictor import CSVCleaner, Engineer
+from predictor.models import LinearModel
 
 
 class RunTask:
@@ -23,6 +24,18 @@ class RunTask:
 
         engineer = Engineer(cleaned_data, arrays)
         engineer.process()
+
+    @staticmethod
+    def train_model(model_type='baseline', arrays='data/processed/arrays'):
+
+        arrays = Path(arrays)
+
+        string2model = {
+            'baseline': LinearModel(arrays),
+        }
+
+        model = string2model[model_type]
+        model.train()
 
 
 if __name__ == '__main__':

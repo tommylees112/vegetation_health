@@ -35,3 +35,19 @@ Turn the CSV into `numpy` arrays which can be input into the model.
 ```bash
 python run.py engineer
 ```
+
+### Models
+
+So far, just a linear regression has been implemented as a baseline
+
+```bash
+python run.py train_model
+```
+
+## Results
+
+Randomly selected test set. TODO is to split by year, so that the test set is better stratified from the training set.
+
+| Model             | RMSE |
+|:-----------------:|:----:|
+|Linear Regression  |0.051 |
