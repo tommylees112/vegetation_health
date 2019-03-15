@@ -187,3 +187,15 @@ def create_lc_mask(ds):
     indexes_to_remove = mask_df.where(~mask_df.lc_mask).dropna()
 
     return lc_mask, mask_df, indexes_to_remove
+
+
+def drop_nans_and_flatten(dataArray):
+    """flatten the array and drop nans from that array. Useful for plotting histograms.
+
+    Arguments:
+    ---------
+    : dataArray (xr.DataArray)
+        the DataArray of your value you want to flatten
+    """
+    # drop NaNs and flatten
+    return dataArray.values[~np.isnan(dataArray.values)]
