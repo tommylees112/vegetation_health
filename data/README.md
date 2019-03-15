@@ -1,3 +1,3 @@
 # Data
 
-Placeholder for input data
+Placeholder for data

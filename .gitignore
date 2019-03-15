@@ -1,0 +1,7 @@
+*.csv
+*.npy
+.DS_Store
+notebooks/.ipynb_checkpoints
+__pycache__
+*.pyc
+.idea
