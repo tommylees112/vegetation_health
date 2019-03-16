@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-KEY_COLS = ['lat', 'lon', 'month', 'year']
+KEY_COLS = ['lat', 'lon', 'time', 'gb_year', 'gb_month']
 VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'spi', 'spei', 'ndvi', 'evi']
 TARGET_COL = 'ndvi'
 
@@ -18,11 +18,14 @@ class CSVCleaner:
         self.csv_path = raw_csv
         self.processed_csv = processed_csv
 
-    def readfile(self):
+    def readfile(self, pred_month):
         data = pd.read_csv(self.csv_path).dropna(how='any', axis=0)
 
         # a month column is already present. Add a year column
-        data['year'] = pd.to_datetime(data['time']).dt.year
+        data['time'] = pd.to_datetime(data['time'])
+
+        data['gb_month'], data['gb_year'] = self.update_year_month(data['time'],
+                                                                   pred_month)
 
         lst_cols = ['lst_night', 'lst_day']
 
@@ -36,9 +39,9 @@ class CSVCleaner:
 
         return data[return_cols]
 
-    def process(self, normalizing_percentile=95):
+    def process(self, normalizing_percentile=95, pred_month=6):
 
-        data = self.readfile()
+        data = self.readfile(pred_month)
 
         data['target'] = data[TARGET_COL]
 
@@ -57,3 +60,18 @@ class CSVCleaner:
         ptp = np.percentile(series, max_percentile) - np.percentile(series, min_percentile)
 
         return (series - series.mean()) / ptp
+
+    @staticmethod
+    def update_year_month(times, pred_month):
+        """Given a pred year (e.g. 6), this method will return two new series with
+        updated years and months so that a "year" of data will be the 11 months preceding the
+        pred_month, and the pred_month. This makes it easier for the engineer to then make the training
+        data
+        """
+        if pred_month == 12:
+            return times.dt.month, times.dt.year
+
+        month_diff = 12 - pred_month
+        relative_times = times - pd.DateOffset(months=month_diff)
+
+        return relative_times.dt.month, relative_times.dt.year

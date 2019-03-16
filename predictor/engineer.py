@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
-from .preprocessing import VALUE_COLS, TARGET_COL
+from .preprocessing import VALUE_COLS
 
 
 class Engineer:
@@ -32,12 +32,12 @@ class Engineer:
         # first, groupby lat, lon, so that we process the same place together
         for latlon, group in data.groupby(by=['lat', 'lon']):
             latlon_np = np.array(latlon)
-            for year, subgroup in group.groupby(by='year'):
+            for year, subgroup in group.groupby(by='gb_year'):
                 if len(subgroup) != 12:
                     # print(f'Ignoring data from {year} at {latlon} due to missing rows')
                     skipped += 1
                     continue
-                subgroup = subgroup.sort_values(by='month', ascending=True)
+                subgroup = subgroup.sort_values(by='gb_month', ascending=True)
 
                 x = subgroup[:-1][VALUE_COLS].values
                 y = subgroup.iloc[-1]['target']
