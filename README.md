@@ -48,6 +48,8 @@ python run.py train_model
 
 Models are trained on data before 2016, and evaluated on 2016 data. Vegetation health in June is being predicted.
 
-| Model             | RMSE |
-|:-----------------:|:----:|
-|Linear Regression  |0.045 |
+In addition, vegetation health can be hidden from the model to better understand the effects of the other features.
+
+| Model             | RMSE | RMSE (no veg) |
+|:-----------------:|:----:|:-------------:|
+|Linear Regression  |0.045 |0.094          |

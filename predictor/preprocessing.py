@@ -4,6 +4,7 @@ from pathlib import Path
 
 KEY_COLS = ['lat', 'lon', 'time', 'gb_year', 'gb_month']
 VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'spi', 'spei', 'ndvi', 'evi']
+VEGETATION_LABELS = ['ndvi', 'evi']
 TARGET_COL = 'ndvi'
 
 

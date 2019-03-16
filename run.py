@@ -26,12 +26,13 @@ class RunTask:
         engineer.process(test_year)
 
     @staticmethod
-    def train_model(model_type='baseline', arrays='data/processed/arrays'):
+    def train_model(model_type='baseline', arrays='data/processed/arrays',
+                    hide_vegetation=False):
 
         arrays = Path(arrays)
 
         string2model = {
-            'baseline': LinearModel(arrays),
+            'baseline': LinearModel(arrays, hide_vegetation),
         }
 
         model = string2model[model_type]
