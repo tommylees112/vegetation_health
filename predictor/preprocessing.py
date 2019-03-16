@@ -71,7 +71,8 @@ class CSVCleaner:
         if pred_month == 12:
             return times.dt.month, times.dt.year
 
-        month_diff = 12 - pred_month
-        relative_times = times - pd.DateOffset(months=month_diff)
+        relative_times = times - pd.DateOffset(months=pred_month)
 
-        return relative_times.dt.month, relative_times.dt.year
+        # we add one year so that the year column the engineer makes will be reflective
+        # of the pred year, which is shifted because of the data offset we used
+        return relative_times.dt.month, relative_times.dt.year + 1

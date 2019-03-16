@@ -24,7 +24,7 @@ def test_year_month():
     months_2018 = [datetime(2018, x, 1) for x in range(1, 13)]
     months_2019 = [datetime(2019, x, 1) for x in range(1, 13)]
 
-    g1, g2, g3 = [1] * 6, [2] * 12, [3] * 6
+    g1, g2, g3 = [1] * 5, [2] * 12, [3] * 7
     test_data = {
         'times': months_2018 + months_2019,
         'group': g1 + g2 + g3,
@@ -33,7 +33,7 @@ def test_year_month():
 
     cleaner = CSVCleaner()
     test_df['gp_month'], test_df['gp_year'] = cleaner.update_year_month(test_df['times'],
-                                                                        pred_month=6)
+                                                                        pred_month=5)
 
     # all of g2 should be in the same gp_year
     group_2 = test_df[test_df['gp_year'] == 2018]
