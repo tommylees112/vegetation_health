@@ -13,15 +13,13 @@ class Engineer:
     def __init__(self, cleaned_data=Path('data/processed/cleaned_data.csv'),
                  arrays=Path('data/processed/arrays')):
 
-        if not arrays.exists():
-            arrays.mkdir()
         self.arrays_path = arrays
         self.cleaned_data_path = cleaned_data
 
     def readfile(self):
         return pd.read_csv(self.cleaned_data_path)
 
-    def process(self):
+    def process(self, test_year=2016):
 
         data = self.readfile()
 
@@ -52,8 +50,26 @@ class Engineer:
 
         print(f'Done processing {len(latlons)} years! Skipped {skipped} years due to missing rows')
 
+        # turn everything into np arrays for manipulation
+        latlons, years, vals, targets = np.vstack(latlons), np.array(years), np.stack(vals), np.array(targets)
+
+        # split into train and test sets
+        test_idx = np.where(years == test_year)[0]
+        train_idx = np.where(years < test_year)[0]
+
+        test_arrays = self.arrays_path / 'test'
+        train_arrays = self.arrays_path / 'train'
+
+        test_arrays.mkdir(parents=True, exist_ok=True)
+        train_arrays.mkdir(exist_ok=True)
+
         print('Saving data')
-        np.save(self.arrays_path / 'latlon.npy', np.vstack(latlons))
-        np.save(self.arrays_path / 'years.npy', np.array(years))
-        np.save(self.arrays_path / 'x.npy', np.stack(vals))
-        np.save(self.arrays_path / 'y.npy', np.array(targets))
+        np.save(train_arrays / 'latlon.npy', latlons[train_idx])
+        np.save(train_arrays / 'years.npy', years[train_idx])
+        np.save(train_arrays / 'x.npy', vals[train_idx])
+        np.save(train_arrays / 'y.npy', targets[train_idx])
+
+        np.save(test_arrays / 'latlon.npy', latlons[test_idx])
+        np.save(test_arrays / 'years.npy', years[test_idx])
+        np.save(test_arrays / 'x.npy', vals[test_idx])
+        np.save(test_arrays / 'y.npy', targets[test_idx])

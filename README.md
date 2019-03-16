@@ -46,8 +46,8 @@ python run.py train_model
 
 ## Results
 
-Randomly selected test set. TODO is to split by year, so that the test set is better stratified from the training set.
+Models are trained on data before 2016, and evaluated on 2016 data. Vegetation health in June is being predicted.
 
 | Model             | RMSE |
 |:-----------------:|:----:|
-|Linear Regression  |0.051 |
+|Linear Regression  |0.045 |

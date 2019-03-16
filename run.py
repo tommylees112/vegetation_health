@@ -18,12 +18,12 @@ class RunTask:
 
     @staticmethod
     def engineer(cleaned_data='data/processed/cleaned_data.csv',
-                 arrays='data/processed/arrays'):
+                 arrays='data/processed/arrays', test_year=2016):
 
         cleaned_data, arrays = Path(cleaned_data), Path(arrays)
 
         engineer = Engineer(cleaned_data, arrays)
-        engineer.process()
+        engineer.process(test_year)
 
     @staticmethod
     def train_model(model_type='baseline', arrays='data/processed/arrays'):
@@ -36,6 +36,7 @@ class RunTask:
 
         model = string2model[model_type]
         model.train()
+        model.evaluate()
 
 
 if __name__ == '__main__':
