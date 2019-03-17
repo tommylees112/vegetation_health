@@ -5,6 +5,8 @@ from collections import namedtuple
 from sklearn.metrics import mean_squared_error
 from ..preprocessing import VALUE_COLS, VEGETATION_LABELS
 
+DataTuple = namedtuple('Data', ['x', 'y', 'latlon', 'years'])
+
 
 class ModelBase:
 
@@ -37,8 +39,6 @@ class ModelBase:
 
         arrays_path = self.arrays_path / mode
 
-        Data = namedtuple('Data', ['x', 'y', 'latlon', 'years'])
-
         x = np.load(arrays_path / 'x.npy')
 
         if self.hide_vegetation:
@@ -48,7 +48,7 @@ class ModelBase:
 
             x = x[:, :, indices_to_keep]
 
-        return Data(
+        return DataTuple(
                 latlon=np.load(arrays_path / 'latlon.npy'),
                 years=np.load(arrays_path / 'years.npy'),
                 x=x,
