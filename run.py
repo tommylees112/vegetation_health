@@ -2,7 +2,7 @@ import fire
 from pathlib import Path
 
 from predictor import CSVCleaner, Engineer
-from predictor.models import LinearModel, nn_FeedForward
+from predictor.models import LinearModel, nn_FeedForward, nn_Recurrent
 
 
 class RunTask:
@@ -26,14 +26,15 @@ class RunTask:
         engineer.process(test_year)
 
     @staticmethod
-    def train_model(model_type='feedforward', arrays='data/processed/arrays',
+    def train_model(model_type='baseline', arrays='data/processed/arrays',
                     hide_vegetation=True):
 
         arrays = Path(arrays)
 
         string2model = {
             'baseline': LinearModel(arrays, hide_vegetation),
-            'feedforward': nn_FeedForward(arrays, hide_vegetation)
+            'feedforward': nn_FeedForward(arrays, hide_vegetation),
+            'recurrent': nn_Recurrent(arrays, hide_vegetation),
         }
 
         model = string2model[model_type]
