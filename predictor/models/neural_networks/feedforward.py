@@ -66,8 +66,9 @@ class LinearBlock(nn.Module):
         super().__init__()
         self.linear = nn.Linear(in_features=in_features, out_features=out_features)
         self.relu = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+        self.batchnorm = nn.BatchNorm1d(num_features=out_features)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
-        x = self.relu(self.linear(x))
+        x = self.relu(self.batchnorm(self.linear(x)))
         return self.dropout(x)
