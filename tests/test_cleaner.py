@@ -11,11 +11,11 @@ def test_normalizer():
 
     cleaner = CSVCleaner()
 
-    output = cleaner.normalize(random_values, 100)
+    output = cleaner.normalize(random_values)
 
     # output should have mean 0 and ptp 1
     assert np.isclose(output.mean(), 0), f"Mean of output is {output.mean()}, not 0"
-    assert np.isclose(np.ptp(output), 1), f"Ptp of output is {np.ptp(output)}, not 1"
+    assert np.isclose(np.std(output), 1), f"Std of output is {np.std(output)}, not 1"
 
 
 def test_year_month():
@@ -36,7 +36,7 @@ def test_year_month():
                                                                         pred_month=5)
 
     # all of g2 should be in the same gp_year
-    group_2 = test_df[test_df['gp_year'] == 2018]
+    group_2 = test_df[test_df['gp_year'] == 2019]
 
     assert len(group_2) == 12, "Chopped out some 2018 data"
     assert (group_2['group'] == 2).all(), "Not all the correct months were grouped!"
