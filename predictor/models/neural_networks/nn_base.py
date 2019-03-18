@@ -13,19 +13,24 @@ class NNBase(ModelBase):
 
     def __init__(self, model, arrays=Path('data/processed/arrays'), hide_vegetation=False):
         super().__init__(arrays, hide_vegetation)
+
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        # for reproducability
+        torch.manual_seed(42)
+        torch.cuda.manual_seed_all(42)
+
         self.model = model
 
-    def train(self, num_epochs=100, patience=10, batch_size=64, learning_rate=1e-3):
+    def train(self, num_epochs=100, patience=3, batch_size=32, learning_rate=1e-3):
         train_data = self.load_tensors(mode='train')
 
         # split the data into a training and validation set
         total_size = train_data.x.shape[0]
-        val_size = total_size // 5  # 20 % for validation
+        val_size = total_size // 10  # 10 % for validation
         train_size = total_size - val_size
         print(f'After split, training on {train_size} examples, '
               f'validating on {val_size} examples')
-        train_dataset, val_dataset = random_split(TensorDataset(train_data.x, train_data.y),
+        train_dataset, val_dataset = random_split(TensorDataset(train_data.x, train_data.y.unsqueeze(1)),
                                                   (train_size, val_size))
 
         train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
@@ -50,7 +55,7 @@ class NNBase(ModelBase):
                 optimizer.zero_grad()
                 pred_y = self.model(train_x)
 
-                loss = F.mse_loss(pred_y, train_y)
+                loss = F.smooth_l1_loss(pred_y, train_y)
                 loss.backward()
                 optimizer.step()
 
@@ -98,7 +103,6 @@ class NNBase(ModelBase):
             for test_x, test_y in tqdm(test_dataloader):
                 output_preds.append(self.model(test_x).squeeze(1).cpu().numpy())
                 output_true.append(test_y.cpu().numpy())
-
         return np.concatenate(output_true), np.concatenate(output_preds)
 
     def load_tensors(self, mode='train'):
