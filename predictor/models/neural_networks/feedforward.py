@@ -18,7 +18,7 @@ class FeedForward(NNBase):
 
         num_features = features_per_month * 11
 
-        super().__init__(LinearModel(num_features, [num_features, 10 * num_features], 0.25),
+        super().__init__(LinearModel(num_features, [num_features], 0.25),
                          arrays, hide_vegetation)
 
 
@@ -41,11 +41,10 @@ class LinearModel(nn.Module):
     def init_weights(self):
         for dense_layer in self.dense_layers:
             nn.init.kaiming_uniform_(dense_layer.linear.weight.data)
-            # http://cs231n.github.io/neural-networks-2/#init
-            # see: Initializing the biases
-            nn.init.constant_(dense_layer.linear.bias.data, 0)
 
         nn.init.kaiming_uniform_(self.final_dense.weight.data)
+        # http://cs231n.github.io/neural-networks-2/#init
+        # see: Initializing the biases
         nn.init.constant_(self.final_dense.bias.data, 0)
 
     def forward(self, x):
@@ -64,10 +63,11 @@ class LinearBlock(nn.Module):
 
     def __init__(self, in_features, out_features, dropout=0.25):
         super().__init__()
-        self.linear = nn.Linear(in_features=in_features, out_features=out_features)
+        self.linear = nn.Linear(in_features=in_features, out_features=out_features, bias=False)
         self.relu = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+        self.batchnorm = nn.BatchNorm1d(num_features=out_features)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
-        x = self.relu(self.linear(x))
+        x = self.relu(self.batchnorm(self.linear(x)))
         return self.dropout(x)

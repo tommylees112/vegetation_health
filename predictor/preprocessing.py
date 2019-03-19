@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from pathlib import Path
 
 KEY_COLS = ['lat', 'lon', 'time', 'gb_year', 'gb_month']
@@ -40,7 +39,7 @@ class CSVCleaner:
 
         return data[return_cols]
 
-    def process(self, normalizing_percentile=95, pred_month=6):
+    def process(self, pred_month=6):
 
         data = self.readfile(pred_month)
 
@@ -48,19 +47,15 @@ class CSVCleaner:
 
         for col in VALUE_COLS:
             print(f'Normalizing {col}')
-            data[col] = self.normalize(data[col], normalizing_percentile)
+            data[col] = self.normalize(data[col])
 
         data.to_csv(self.processed_csv, index=False)
         print(f'Saved {self.processed_csv}')
 
     @staticmethod
-    def normalize(series, normalizing_percentile):
-        # all features to have 0 mean and a normalized point to point value
-        min_percentile = (100 - normalizing_percentile) / 2
-        max_percentile = 100 - min_percentile
-        ptp = np.percentile(series, max_percentile) - np.percentile(series, min_percentile)
-
-        return (series - series.mean()) / ptp
+    def normalize(series):
+        # all features to have 0 mean and std 1
+        return (series - series.mean()) / series.std()
 
     @staticmethod
     def update_year_month(times, pred_month):

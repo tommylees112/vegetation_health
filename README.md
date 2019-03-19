@@ -50,6 +50,8 @@ Models are trained on data before 2016, and evaluated on 2016 data. Vegetation h
 
 In addition, vegetation health can be hidden from the model to better understand the effects of the other features.
 
-| Model             | RMSE | RMSE (no veg) |
-|:-----------------:|:----:|:-------------:|
-|Linear Regression  |0.045 |0.094          |
+| Model                    | RMSE | RMSE (no veg) |
+|:------------------------:|:----:|:-------------:|
+|Linear Regression         |0.045 |0.094          |
+|Feedforward neural network|0.047 |0.081          |
+|Recurrent neural network  |0.043 |0.073          |
