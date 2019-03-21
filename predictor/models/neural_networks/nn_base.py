@@ -19,6 +19,8 @@ class NNBase(ModelBase):
         torch.manual_seed(42)
         torch.cuda.manual_seed_all(42)
 
+        if torch.cuda.is_available():
+            model = model.cuda()
         self.model = model
 
     def train(self, num_epochs=100, patience=3, batch_size=32, learning_rate=1e-3):
