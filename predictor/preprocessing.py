@@ -1,6 +1,8 @@
 import pandas as pd
-import json
 from pathlib import Path
+import xarray as xr
+import numpy as np
+import json
 
 KEY_COLS = ['lat', 'lon', 'time', 'gb_year', 'gb_month']
 VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'spi', 'spei', 'ndvi', 'evi']
@@ -8,38 +10,23 @@ VEGETATION_LABELS = ['ndvi', 'evi']
 TARGET_COL = 'ndvi'
 
 
-class CSVCleaner:
-    """Clean the input data, by removing nan (or encoded-as-nan) values,
-    and normalizing all non-key values.
+class CleanerBase:
+    """Base for cleaners
     """
+    def __init__(self, raw_filepath=Path('data/raw/tabular_data.csv'),
+                 processed_filepath=Path('data/processed/cleaned_data.csv')):
 
-    def __init__(self, raw_csv=Path('data/raw/tabular_data.csv'),
-                 processed_csv=Path('data/processed/cleaned_data.csv')):
+        self.filepath = raw_filepath
+        self.processed_filepath = processed_filepath
+        self.normalizing_dict = processed_filepath.parents[0] / 'normalizing_dict.json'
 
-        self.csv_path = raw_csv
-        self.processed_csv = processed_csv
-        self.normalizing_dict = processed_csv.parents[0] / 'normalizing_dict.json'
 
     def readfile(self, pred_month):
-        data = pd.read_csv(self.csv_path).dropna(how='any', axis=0)
+        raise NotImplementedError
 
-        # a month column is already present. Add a year column
-        data['time'] = pd.to_datetime(data['time'])
-
-        data['gb_month'], data['gb_year'] = self.update_year_month(data['time'],
-                                                                   pred_month)
-
-        lst_cols = ['lst_night', 'lst_day']
-
-        for col in lst_cols:
-            # for the lst_cols, missing data is coded as 200
-            data = data[data[col] != 200]
-
-        return_cols = KEY_COLS + VALUE_COLS
-
-        print(f'Loaded {len(data)} rows!')
-
-        return data[return_cols]
+    @staticmethod
+    def compute_anomaly():
+        raise NotImplementedError
 
     def process(self, pred_month=6):
 
@@ -62,11 +49,12 @@ class CSVCleaner:
 
             data[col] = (series - mean) / std
 
-        data.to_csv(self.processed_csv, index=False)
-        print(f'Saved {self.processed_csv}')
+        data.to_csv(self.processed_filepath, index=False)
+        print(f'Saved {self.processed_filepath}')
 
         with open(self.normalizing_dict, 'w') as f:
             json.dump(normalizing_dict, f)
+
         print(f'Saved {self.normalizing_dict}')
 
     @staticmethod
@@ -84,3 +72,101 @@ class CSVCleaner:
         # we add one year so that the year column the engineer makes will be reflective
         # of the pred year, which is shifted because of the data offset we used
         return relative_times.dt.month, relative_times.dt.year + 1
+
+
+class CSVCleaner(CleanerBase):
+    """Clean the input data, by removing nan (or encoded-as-nan) values,
+    and normalizing all non-key values.
+    """
+
+    def __init__(self, raw_filepath=Path('data/raw/tabular_data.csv'),
+                 processed_filepath=Path('data/processed/cleaned_data.csv')):
+
+        super().__init__(raw_filepath=raw_filepath, processed_filepath=processed_filepath)
+
+    def readfile(self, pred_month):
+        data = pd.read_csv(self.filepath).dropna(how='any', axis=0)
+
+        # a month column is already present. Add a year column
+        data['time'] = pd.to_datetime(data['time'])
+
+        data['gb_month'], data['gb_year'] = self.update_year_month(data['time'],
+                                                                   pred_month)
+
+        lst_cols = ['lst_night', 'lst_day']
+
+        for col in lst_cols:
+            # for the lst_cols, missing data is coded as 200
+            data = data[data[col] != 200]
+
+        return_cols = KEY_COLS + VALUE_COLS
+
+        print(f'Loaded {len(data)} rows!')
+
+        return data[return_cols]
+
+
+class NCCleaner(CleanerBase):
+    """Clean the input data (from the .nc file), by removing nan
+        (or encoded-as-nan) values, and normalising the non-key values.
+
+        Does some preprocessing on the .nc file using xarray and then converts
+         it to a dataframe for the other methods
+    """
+    def __init__(self, raw_filepath=Path('data/raw/OUT.NC'),
+                 processed_filepath=Path('data/processed/cleaned_data_nc.csv')):
+
+        super().__init__(raw_filepath=raw_filepath, processed_filepath=processed_filepath)
+
+    def readfile(self, pred_month):
+        # drop any Pixel-Times with missing values
+        data = xr.open_dataset(self.filepath)
+
+        if 'month' not in [var_ for var_ in data.variables.keys()]:
+            data['month'] = data['time.month']
+
+        # a month column is already present. Add a year column
+        if 'year' not in [var_ for var_ in data.variables.keys()]:
+            data['year'] = data['time.year']
+
+        data['gb_month'], data['gb_year'] = self.update_year_month(pd.to_datetime(data.time.to_series()), pred_month)
+
+        # mask out the invalid temperature values
+        lst_cols = ['lst_night', 'lst_day']
+        for var_ in lst_cols:
+            # for the lst_cols, missing data is coded as 200
+            valid = (data[var_] < 200) | (np.isnan(data[var_]))
+            data[var_] = data[var_].fillna(np.nan).where(valid)
+
+        return_cols = KEY_COLS + VALUE_COLS
+
+        # compute the ndvi_anomaly
+        data['ndvi_anomaly'] = self.compute_anomaly(data.ndvi)
+
+        # >>>>>>>>>>>> don't know how to get the dropna to work with xarray
+        # convert to pd.DataFrame
+        data = data.to_dataframe().reset_index()
+        data.dropna(how='any', axis=0)
+        # <<<<<<<<<<<<<
+
+        print(f'Loaded {len(data)} rows!')
+        return data[return_cols]
+
+    @staticmethod
+    def compute_anomaly(da, time_group='time.month'):
+        """ Return a dataarray where values are an anomaly from the MEAN for that
+             location at a given timestep. Defaults to finding monthly anomalies.
+
+        Notes: http://xarray.pydata.org/en/stable/examples/weather-data.html#calculate-monthly-anomalies
+
+        Arguments:
+        ---------
+        : da (xr.DataArray)
+        : time_group (str)
+            time string to group.
+        """
+        assert isinstance(da, xr.DataArray), f"`da` should be of type `xr.DataArray`. Currently: {type(da)}"
+        mthly_vals = da.groupby(time_group).mean('time')
+        da = da.groupby(time_group) - mthly_vals
+
+        return da
