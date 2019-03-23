@@ -1,19 +1,24 @@
 import fire
 from pathlib import Path
 
-from predictor import CSVCleaner, Engineer
+from predictor import CSVCleaner, NCCleaner, Engineer
 from predictor.models import LinearModel, nn_FeedForward, nn_Recurrent
 
 
 class RunTask:
 
     @staticmethod
-    def clean(raw_csv='data/raw/tabular_data.csv',
-              processed_csv='data/processed/cleaned_data.csv',
+    def clean(raw_filepath='data/raw/tabular_data.csv',
+              processed_filepath='data/processed/cleaned_data.csv',
+              netcdf=False,
               pred_month=6):
 
-        raw_csv, processed_csv = Path(raw_csv), Path(processed_csv)
-        cleaner = CSVCleaner(raw_csv, processed_csv)
+        raw_filepath, processed_filepath = Path(raw_filepath), Path(processed_filepath)
+        if netcdf:
+            cleaner = NCCleaner(raw_filepath, processed_filepath)
+        else:
+            cleaner = CSVCleaner(raw_filepath, processed_filepath)
+            
         cleaner.process(pred_month)
 
     @staticmethod
