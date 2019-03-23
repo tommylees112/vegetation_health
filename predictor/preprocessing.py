@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 import xarray as xr
 import numpy as np
+import json
 
 KEY_COLS = ['lat', 'lon', 'time', 'gb_year', 'gb_month']
 VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'spi', 'spei', 'ndvi', 'evi']
@@ -17,6 +18,7 @@ class CleanerBase:
 
         self.filepath = raw_filepath
         self.processed_filepath = processed_filepath
+        self.normalizing_dict = processed_filepath.parents[0] / 'normalizing_dict.json'
 
     def readfile(self, pred_month):
         raise NotImplementedError
@@ -31,17 +33,28 @@ class CleanerBase:
 
         data['target'] = data[TARGET_COL]
 
+        normalizing_dict = {}
         for col in VALUE_COLS:
             print(f'Normalizing {col}')
-            data[col] = self.normalize(data[col])
+
+            series = data[col]
+
+            # calculate normalizing values
+            mean, std = series.mean(), series.std()
+            # add them to the dictionary
+            normalizing_dict[col] = {
+                'mean': mean, 'std': std,
+            }
+
+            data[col] = (series - mean) / std
 
         data.to_csv(self.processed_filepath, index=False)
         print(f'Saved {self.processed_filepath}')
 
-    @staticmethod
-    def normalize(series):
-        # all features to have 0 mean and std 1
-        return (series - series.mean()) / series.std()
+        with open(self.normalizing_dict, 'w') as f:
+            json.dump(normalizing_dict, f)
+
+        print(f'Saved {self.normalizing_dict}')
 
     @staticmethod
     def update_year_month(times, pred_month):
