@@ -20,6 +20,7 @@ class CleanerBase:
         self.processed_filepath = processed_filepath
         self.normalizing_dict = processed_filepath.parents[0] / 'normalizing_dict.json'
 
+
     def readfile(self, pred_month):
         raise NotImplementedError
 

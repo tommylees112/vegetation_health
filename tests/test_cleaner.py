@@ -1,21 +1,7 @@
-import numpy as np
 import pandas as pd
 from datetime import datetime
 
 from predictor import CSVCleaner
-
-
-def test_normalizer():
-    # random sample with mean 10 uniformly from 10 to 110
-    random_values = (np.random.sample(size=100) * 100) + 10
-
-    cleaner = CSVCleaner()
-
-    output = cleaner.normalize(random_values)
-
-    # output should have mean 0 and ptp 1
-    assert np.isclose(output.mean(), 0), f"Mean of output is {output.mean()}, not 0"
-    assert np.isclose(np.std(output), 1), f"Std of output is {np.std(output)}, not 1"
 
 
 def test_year_month():
