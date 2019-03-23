@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 import xarray as xr
-
+import numpy as np
 
 KEY_COLS = ['lat', 'lon', 'time', 'gb_year', 'gb_month']
 VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'spi', 'spei', 'ndvi', 'evi']
@@ -91,6 +91,7 @@ class NCCleaner(CSVCleaner):
             processed_filepath=processed_filepath
         )
 
+
     def readfile(self, pred_month):
         # drop any Pixel-Times with missing values
         data = xr.open_dataset(self.filepath)
@@ -102,16 +103,14 @@ class NCCleaner(CSVCleaner):
         if 'year' not in [var_ for var_ in data.variables.keys()]:
             data['year'] = data['time.year']
 
-        data['gb_month'], data['gb_year'] = update_year_month(
-            pd.to_datetime(data.time.to_series()), pred_month
-        )
+        data['gb_month'], data['gb_year'] = self.update_year_month(pd.to_datetime(data.time.to_series()), pred_month)
 
         # mask out the invalid temperature values
         lst_cols = ['lst_night', 'lst_day']
         for var_ in lst_cols:
             # for the lst_cols, missing data is coded as 200
-            valid = (ds[var_] < 200) | (np.isnan(ds[var_]))
-            ds[var_] = ds[var_].fillna(np.nan).where(valid)
+            valid = (data[var_] < 200) | (np.isnan(data[var_]))
+            data[var_] = data[var_].fillna(np.nan).where(valid)
 
         return_cols = KEY_COLS + VALUE_COLS
 
@@ -120,7 +119,7 @@ class NCCleaner(CSVCleaner):
 
         # >>>>>>>>>>>> don't know how to get the dropna to work with xarray
         # convert to pd.DataFrame
-        data = data.to_dataframe()
+        data = data.to_dataframe().reset_index()
         data.dropna(how='any', axis=0)
         # <<<<<<<<<<<<<
 
