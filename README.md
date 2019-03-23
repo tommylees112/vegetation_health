@@ -8,8 +8,8 @@ Notes about the data:
     surface_sm, rootzone_sm, sm, precip, ndvi, evi]
 
 - East Africa is defined here as the area of the original .nc file (spi_spei.nc)
-    lat min - lat max : -4.9750023 15.174995
-    lon min - lon max : 32.524994 48.274994
+    latmin - latmax : -4.9750023 15.174995
+    lonmin - lonmax : 32.524994 48.274994
     BoundingBox(left, bottom, right, top)
         (32.524994, -4.9750023, 15.174995, 48.274994)
 
