@@ -3,6 +3,7 @@ from pathlib import Path
 import xarray as xr
 import numpy as np
 import json
+import ipdb
 
 KEY_COLS = ['lat', 'lon', 'time', 'gb_year', 'gb_month']
 VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'spi', 'spei', 'ndvi', 'evi'] #, 'ndvi_anomaly']
@@ -33,7 +34,8 @@ class CleanerBase:
         data = self.readfile(pred_month)
 
         data['target'] = data[TARGET_COL]
-
+        ipdb.set_trace()
+        
         normalizing_dict = {}
         for col in VALUE_COLS:
             print(f'Normalizing {col}')
