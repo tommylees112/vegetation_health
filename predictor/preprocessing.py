@@ -20,8 +20,6 @@ class CSVCleaner:
         self.processed_csv = processed_csv
         self.normalizing_dict = processed_csv.parents[0] / 'normalizing_dict.json'
 
-
-
     def readfile(self, pred_month):
         data = pd.read_csv(self.csv_path).dropna(how='any', axis=0)
 
