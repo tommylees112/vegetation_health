@@ -84,11 +84,16 @@ class NCCleaner(CSVCleaner):
         Does some preprocessing on the .nc file using xarray and then converts
          it to a dataframe for the other methods
     """
+    def __init__(self, raw_filepath=Path('data/raw/OUT.NC'),
+                 processed_filepath=Path('data/processed/cleaned_data_nc.csv')):
 
+        super(NCCleaner, self).__init__(raw_filepath=raw_filepath,
+            processed_filepath=processed_filepath
+        )
 
     def readfile(self, pred_month):
         # drop any Pixel-Times with missing values
-        data = xr.open_dataset(self.nc_path)
+        data = xr.open_dataset(self.filepath)
 
         if 'month' not in [var_ for var_ in data.variables.keys()]:
             data['month'] = data['time.month']
@@ -126,6 +131,8 @@ class NCCleaner(CSVCleaner):
     def compute_anomaly(da, time_group='time.month'):
         """ Return a dataarray where values are an anomaly from the MEAN for that
              location at a given timestep. Defaults to finding monthly anomalies.
+
+        Notes: http://xarray.pydata.org/en/stable/examples/weather-data.html#calculate-monthly-anomalies
 
         Arguments:
         ---------
