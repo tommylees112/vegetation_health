@@ -9,11 +9,9 @@ VEGETATION_LABELS = ['ndvi', 'evi']
 TARGET_COL = 'ndvi'
 
 
-class CSVCleaner:
-    """Clean the input data, by removing nan (or encoded-as-nan) values,
-    and normalizing all non-key values.
+class CleanerBase:
+    """Base for cleaners
     """
-
     def __init__(self, raw_filepath=Path('data/raw/tabular_data.csv'),
                  processed_filepath=Path('data/processed/cleaned_data.csv')):
 
@@ -21,25 +19,11 @@ class CSVCleaner:
         self.processed_filepath = processed_filepath
 
     def readfile(self, pred_month):
-        data = pd.read_csv(self.filepath).dropna(how='any', axis=0)
+        raise NotImplementedError
 
-        # a month column is already present. Add a year column
-        data['time'] = pd.to_datetime(data['time'])
-
-        data['gb_month'], data['gb_year'] = self.update_year_month(data['time'],
-                                                                   pred_month)
-
-        lst_cols = ['lst_night', 'lst_day']
-
-        for col in lst_cols:
-            # for the lst_cols, missing data is coded as 200
-            data = data[data[col] != 200]
-
-        return_cols = KEY_COLS + VALUE_COLS
-
-        print(f'Loaded {len(data)} rows!')
-
-        return data[return_cols]
+    @staticmethod
+    def compute_anomaly():
+        raise NotImplementedError
 
     def process(self, pred_month=6):
 
@@ -76,8 +60,39 @@ class CSVCleaner:
         return relative_times.dt.month, relative_times.dt.year + 1
 
 
+class CSVCleaner(CleanerBase):
+    """Clean the input data, by removing nan (or encoded-as-nan) values,
+    and normalizing all non-key values.
+    """
 
-class NCCleaner(CSVCleaner):
+    def __init__(self, raw_filepath=Path('data/raw/tabular_data.csv'),
+                 processed_filepath=Path('data/processed/cleaned_data.csv')):
+
+        super().__init__(raw_filepath=raw_filepath, processed_filepath=processed_filepath)
+
+    def readfile(self, pred_month):
+        data = pd.read_csv(self.filepath).dropna(how='any', axis=0)
+
+        # a month column is already present. Add a year column
+        data['time'] = pd.to_datetime(data['time'])
+
+        data['gb_month'], data['gb_year'] = self.update_year_month(data['time'],
+                                                                   pred_month)
+
+        lst_cols = ['lst_night', 'lst_day']
+
+        for col in lst_cols:
+            # for the lst_cols, missing data is coded as 200
+            data = data[data[col] != 200]
+
+        return_cols = KEY_COLS + VALUE_COLS
+
+        print(f'Loaded {len(data)} rows!')
+
+        return data[return_cols]
+
+
+class NCCleaner(CleanerBase):
     """Clean the input data (from the .nc file), by removing nan
         (or encoded-as-nan) values, and normalising the non-key values.
 
@@ -87,10 +102,7 @@ class NCCleaner(CSVCleaner):
     def __init__(self, raw_filepath=Path('data/raw/OUT.NC'),
                  processed_filepath=Path('data/processed/cleaned_data_nc.csv')):
 
-        super(NCCleaner, self).__init__(raw_filepath=raw_filepath,
-            processed_filepath=processed_filepath
-        )
-
+        super().__init__(raw_filepath=raw_filepath, processed_filepath=processed_filepath)
 
     def readfile(self, pred_month):
         # drop any Pixel-Times with missing values
