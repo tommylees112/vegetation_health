@@ -28,6 +28,11 @@ Normalize values from the original csv file, remove null values, add a year seri
 python run.py clean
 ```
 
+To run with the netcdf file
+```bash
+python run.py clean --netcdf=True --raw_filepath='data/raw/OUT.nc' --processed_filepath='data/raw/claned_data_NC.csv'
+```
+
 ### Data Processing
 
 Turn the CSV into `numpy` arrays which can be input into the model.
