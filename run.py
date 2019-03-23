@@ -10,11 +10,11 @@ class RunTask:
     @staticmethod
     def clean(raw_csv='data/raw/tabular_data.csv',
               processed_csv='data/processed/cleaned_data.csv',
-              normalizing_percentile=95, pred_month=6):
+              pred_month=6):
 
         raw_csv, processed_csv = Path(raw_csv), Path(processed_csv)
         cleaner = CSVCleaner(raw_csv, processed_csv)
-        cleaner.process(normalizing_percentile, pred_month)
+        cleaner.process(pred_month)
 
     @staticmethod
     def engineer(cleaned_data='data/processed/cleaned_data.csv',
