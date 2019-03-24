@@ -5,9 +5,8 @@ import numpy as np
 import json
 
 KEY_COLS = ['lat', 'lon', 'time', 'gb_year', 'gb_month']
-VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'spi', 'spei', 'ndvi', 'evi']
-VEGETATION_LABELS = ['ndvi', 'evi']
-TARGET_COL = 'ndvi'
+VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'spi', 'spei', 'ndvi', 'evi', 'ndvi_anomaly']
+VEGETATION_LABELS = ['ndvi', 'evi', 'ndvi_anomaly']
 
 
 class CleanerBase:
@@ -20,7 +19,6 @@ class CleanerBase:
         self.processed_filepath = processed_filepath
         self.normalizing_dict = processed_filepath.parents[0] / 'normalizing_dict.json'
 
-
     def readfile(self, pred_month):
         raise NotImplementedError
 
@@ -28,11 +26,13 @@ class CleanerBase:
     def compute_anomaly():
         raise NotImplementedError
 
-    def process(self, pred_month=6):
+    def process(self, pred_month=6, target='ndvi_anomaly'):
+
+        assert target in VALUE_COLS, f'f{target} not in {VALUE_COLS}'
 
         data = self.readfile(pred_month)
 
-        data['target'] = data[TARGET_COL]
+        data['target'] = data[target]
 
         normalizing_dict = {}
         for col in VALUE_COLS:
@@ -44,11 +44,12 @@ class CleanerBase:
             mean, std = series.mean(), series.std()
             # add them to the dictionary
             normalizing_dict[col] = {
-                'mean': mean, 'std': std,
+                'mean': float(mean), 'std': float(std),
             }
 
             data[col] = (series - mean) / std
 
+        print("Saving data")
         data.to_csv(self.processed_filepath, index=False)
         print(f'Saved {self.processed_filepath}')
 
@@ -98,12 +99,26 @@ class CSVCleaner(CleanerBase):
         for col in lst_cols:
             # for the lst_cols, missing data is coded as 200
             data = data[data[col] != 200]
-
+        data['ndvi_anomaly'] = self.compute_anomaly(data)
         return_cols = KEY_COLS + VALUE_COLS
 
         print(f'Loaded {len(data)} rows!')
 
         return data[return_cols]
+
+    @staticmethod
+    def compute_anomaly(data, time_group='month'):
+        print('Computing ndvi anomaly')
+        # first, remove data from after 2015
+        trimmed_data = data[data.time.dt.year < 2016]
+
+        # then, groupby months and find the mean
+        monthly_vals = pd.DataFrame(trimmed_data.groupby('month').mean().ndvi)
+        monthly_vals.columns = ['ndvi_mean']
+
+        ndvi_anomoly = data[['month', 'ndvi']].join(monthly_vals, on='month', how='right')
+        ndvi_anomoly['ndvi_anomaly'] = ndvi_anomoly['ndvi'] - ndvi_anomoly['ndvi_mean']
+        return ndvi_anomoly['ndvi_anomaly']
 
 
 class NCCleaner(CleanerBase):
@@ -165,8 +180,10 @@ class NCCleaner(CleanerBase):
         : time_group (str)
             time string to group.
         """
+        print('Computing ndvi anomaly')
         assert isinstance(da, xr.DataArray), f"`da` should be of type `xr.DataArray`. Currently: {type(da)}"
-        mthly_vals = da.groupby(time_group).mean('time')
+        trimmed_da = da[da['time.year'] < 2016]
+        mthly_vals = trimmed_da.groupby(time_group).mean('time')
         da = da.groupby(time_group) - mthly_vals
 
         return da

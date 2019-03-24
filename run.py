@@ -10,8 +10,7 @@ class RunTask:
     @staticmethod
     def clean(raw_filepath='data/raw/tabular_data.csv',
               processed_filepath='data/processed/cleaned_data.csv',
-              netcdf=False,
-              pred_month=6):
+              target='ndvi_anomaly', pred_month=6, netcdf=False, ):
 
         raw_filepath, processed_filepath = Path(raw_filepath), Path(processed_filepath)
         if netcdf:
@@ -19,7 +18,7 @@ class RunTask:
         else:
             cleaner = CSVCleaner(raw_filepath, processed_filepath)
             
-        cleaner.process(pred_month)
+        cleaner.process(pred_month, target)
 
     @staticmethod
     def engineer(cleaned_data='data/processed/cleaned_data.csv',
