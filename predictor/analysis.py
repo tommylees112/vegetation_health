@@ -3,7 +3,11 @@ import mpl_toolkits.axisartist as AA
 import matplotlib.pyplot as plt
 
 
-def plot_shap_values(x, shap_values, val_list, normalizing_dict, value_to_plot):
+def plot_shap_values(x, shap_values, val_list, normalizing_dict, value_to_plot, normalize_shap_plots=True):
+    """
+    If normalize_shap_plots=True, then the scale of the shap plots will be uniform across all
+    variable plots (on an instance specific basis).
+    """
     # first, lets isolate the lists
     idx = val_list.index(value_to_plot)
 
@@ -22,6 +26,9 @@ def plot_shap_values(x, shap_values, val_list, normalizing_dict, value_to_plot):
 
     par1 = host.twinx()
     par1.axis["right"].toggle(all=True)
+
+    if normalize_shap_plots:
+        par1.set_ylim(shap_values.min(), shap_values.max())
 
     host.set_xlabel("Months")
     host.set_ylabel(value_to_plot)
