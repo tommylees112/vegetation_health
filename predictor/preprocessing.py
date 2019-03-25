@@ -116,9 +116,9 @@ class CSVCleaner(CleanerBase):
         monthly_vals = pd.DataFrame(trimmed_data.groupby('month').mean().ndvi)
         monthly_vals.columns = ['ndvi_mean']
 
-        ndvi_anomoly = data[['month', 'ndvi']].join(monthly_vals, on='month', how='right')
-        ndvi_anomoly['ndvi_anomaly'] = ndvi_anomoly['ndvi'] - ndvi_anomoly['ndvi_mean']
-        return ndvi_anomoly['ndvi_anomaly']
+        ndvi_anomaly = data[['month', 'ndvi']].join(monthly_vals, on='month', how='right')
+        ndvi_anomaly['ndvi_anomaly'] = ndvi_anomaly['ndvi'] - ndvi_anomaly['ndvi_mean']
+        return ndvi_anomaly['ndvi_anomaly']
 
 
 class NCCleaner(CleanerBase):
