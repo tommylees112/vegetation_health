@@ -51,7 +51,7 @@ class Cleaner:
         # >>>>>>>>>>>> don't know how to get the dropna to work with xarray
         # convert to pd.DataFrame
         data = data.to_dataframe().reset_index()
-        data.dropna(how='any', axis=0)
+        data.dropna(how='any', axis=0, inplace=True)
         # <<<<<<<<<<<<<
 
         print(f'Loaded {len(data)} rows!')
