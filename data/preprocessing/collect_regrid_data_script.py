@@ -1,7 +1,13 @@
 """
 @tommylees112
 
-An awful script (sorry Gabi) the data is read in
+An awful script (sorry Gabi) the data is read in separately for each product.
+They are then preprocessed:
+    resample_time
+    select_time_slice
+    regrid_to_reference
+
+using the precipitation data as reference.
 """
 # test.py
 import xarray as xr
@@ -100,7 +106,7 @@ for ix, ds in enumerate(all_vars[:-1]):
     out.append(ds)
 
 # ------------------------------------------------------------------------------
-# Merge all of the dataset
+# Merge all of the datasets
 # ------------------------------------------------------------------------------
 alldata = out + [precip]
 OUT = xr.merge(alldata)
