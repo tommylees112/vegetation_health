@@ -14,6 +14,8 @@ class Engineer:
                  arrays=Path('data/processed/arrays')):
 
         self.arrays_path = arrays
+        if not self.arrays_path.exists():
+            self.arrays_path.mkdir()
         self.cleaned_data_path = cleaned_data
 
     def readfile(self):

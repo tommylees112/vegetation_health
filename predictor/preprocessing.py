@@ -5,7 +5,7 @@ import numpy as np
 import json
 
 KEY_COLS = ['lat', 'lon', 'time', 'gb_year', 'gb_month']
-VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'spi', 'spei', 'ndvi', 'evi', 'ndvi_anomaly']
+VALUE_COLS = ['lst_night', 'lst_day', 'precip', 'sm', 'ndvi', 'evi', 'ndvi_anomaly']
 VEGETATION_LABELS = ['ndvi', 'evi', 'ndvi_anomaly']
 
 
@@ -20,19 +20,16 @@ class Cleaner:
                  processed_filepath=Path('data/processed/cleaned_data.csv')):
 
         self.filepath = raw_filepath
+
+        if not  processed_filepath.parents[0].exists():
+            processed_filepath.parents[0].mkdir()
+
         self.processed_filepath = processed_filepath
         self.normalizing_dict = processed_filepath.parents[0] / 'normalizing_dict.json'
 
     def readfile(self, pred_month):
         # drop any Pixel-Times with missing values
         data = xr.open_dataset(self.filepath)
-
-        if 'month' not in [var_ for var_ in data.variables.keys()]:
-            data['month'] = data['time.month']
-
-        # a month column is already present. Add a year column
-        if 'year' not in [var_ for var_ in data.variables.keys()]:
-            data['year'] = data['time.year']
 
         data['gb_month'], data['gb_year'] = self.update_year_month(pd.to_datetime(data.time.to_series()), pred_month)
 
