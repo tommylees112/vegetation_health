@@ -57,6 +57,6 @@ In addition, vegetation health can be hidden from the model to better understand
 
 | Model                    | RMSE | RMSE (no veg) |
 |:------------------------:|:----:|:-------------:|
-|Linear Regression         |0.045 |0.094          |
-|Feedforward neural network|0.047 |0.081          |
-|Recurrent neural network  |0.043 |0.073          |
+|Linear Regression         |0.040 |0.084          |
+|Feedforward neural network|0.038 |0.070          |
+|Recurrent neural network  |0.035 |0.060          |
