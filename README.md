@@ -1,20 +1,18 @@
-# vegetation_health
+# Vegetation Health
 predicting vegetation health from precipitation and temperature
 
 Notes about the data:
-- vars_list : all of the variables that we are regridding onto a common grid.
-               They are all from different sources
-    [lst_day, lst_night, lst_mean, lst_mean, evap, baresoil_evap, pet, transp,
-    surface_sm, rootzone_sm, sm, precip, ndvi, evi]
+- The following variables are used by the model: `['lst_night', 'lst_day', 'precip', 'sm', 'ndvi', 'evi', 'ndvi_anomaly']`.
+They are all from different sources
 
-- East Africa is defined here as the area of the original .nc file (spi_spei.nc)
-    lat min - lat max : -4.9750023 15.174995
-    lon min - lon max : 32.524994 48.274994
-    BoundingBox(left, bottom, right, top)
-        (32.524994, -4.9750023, 15.174995, 48.274994)
 
-- Time Range
-    2010-01-01 : 2017-01-01
+- East Africa is defined here as the area of the original `.nc` file (`spi_spei.nc`)
+    
+    lat min,  lat max : `-4.9750023`,  `15.174995`
+    
+    lon min, lon max : `32.524994`,  `48.274994`
+
+    This makes the following bounding box: (left, bottom, right, top):  `(32.524994, -4.9750023, 15.174995, 48.274994)`
 
 ## Pipeline
 
@@ -27,11 +25,8 @@ Normalize values from the original csv file, remove null values, add a year seri
 ```bash
 python run.py clean
 ```
-
-To run with the netcdf file
-```bash
-python run.py clean --netcdf=True --raw_filepath='data/raw/OUT.nc' --processed_filepath='data/raw/claned_data_NC.csv'
-```
+A target can be selected from the variables defined above by adding the flag `--target`, e.g. 
+`--target=ndvi_anomaly`. By default, the target is `ndvi`.
 
 ### Data Processing
 
