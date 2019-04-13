@@ -36,7 +36,7 @@ class ModelBase:
         # arrays
         raise NotImplementedError
 
-    def evaluate(self, return_eval=False):
+    def evaluate(self, return_eval=False, save_preds=False):
         """Evaluates the model using root mean squared error.
         This ensures evaluation is consistent across differnet models.
 
@@ -44,6 +44,9 @@ class ModelBase:
         ----------
         return_eval: bool, default: False
             Whether to return the calculated root mean squared error
+        save_preds: bool, default: False
+            Whether to save the predictions. If True, they will be saved
+            in self.arrays_path / preds.npy
 
         Returns:
         ----------
@@ -55,6 +58,10 @@ class ModelBase:
         test_rmse = np.sqrt(mean_squared_error(y_true, y_pred))
 
         print(f'Test set RMSE: {test_rmse}')
+
+        if save_preds:
+            print(f'Saving predictions to {self.arrays_path / "preds.npy"}')
+            np.save(self.arrays_path / 'preds.npy', y_pred)
 
         if return_eval:
             return test_rmse

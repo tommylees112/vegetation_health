@@ -31,7 +31,7 @@ class RunTask:
 
     @staticmethod
     def train_model(model_type='baseline', processed_folder='data/processed',
-                    target='ndvi', hide_vegetation=True):
+                    target='ndvi', hide_vegetation=True, save_preds=True):
 
         processed_folder = Path(processed_folder)
         arrays_folder = processed_folder / target / 'arrays'
@@ -44,7 +44,7 @@ class RunTask:
 
         model = string2model[model_type]
         model.train()
-        model.evaluate()
+        model.evaluate(save_preds=save_preds)
 
 
 if __name__ == '__main__':

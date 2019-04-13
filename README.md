@@ -19,6 +19,11 @@ In addition, vegetation health can be hidden from the model to better understand
 |Feedforward neural network|0.038 |0.070          |
 |Recurrent neural network  |0.035 |0.060          |
 
+The results of the models can also be compared visually with the ground truths (the example below is from the baseline
+logistic regression):
+
+<img src="figs/ndvi_results_logistic_regression.png" alt="Logstic regression results" height="400px"/>
+
 ## Pipeline
 
 [Python Fire](https://github.com/google/python-fire) is used to generate a CLI.
@@ -44,7 +49,8 @@ python run.py engineer
 
 ### Models
 
-So far, just a linear regression has been implemented as a baseline
+3 models have been implemented: a baseline linear regression, a feedforward neural network and a
+recurrent neural network. They can be selected using the `--model_type` flag.
 
 ```bash
 python run.py train_model
