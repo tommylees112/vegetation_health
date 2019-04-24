@@ -4,9 +4,28 @@ import matplotlib.pyplot as plt
 
 
 def plot_shap_values(x, shap_values, val_list, normalizing_dict, value_to_plot, normalize_shap_plots=True):
-    """
-    If normalize_shap_plots=True, then the scale of the shap plots will be uniform across all
-    variable plots (on an instance specific basis).
+    """Plots the denormalized values against their shap values, so that
+    variations in the input features to the model can be compared to their effect
+    on the model. For example plots, see notebooks/08_gt_recurrent_model.ipynb.
+
+    Parameters:
+    ----------
+    x: np.array
+        The input to a model for a single data instance
+    shap_values: np.array
+        The corresponding shap values (to x)
+    val_list: list
+        A list of the variable names, for axis labels
+    normalizing_dict: dict
+        The normalizing dict saved by the `Cleaner`, so that the x array can be
+        denormalized
+    value_to_plot: str
+        The specific input variable to plot. Must be in val_list
+    normalize_shap_plots: boolean
+        If True, then the scale of the shap plots will be uniform across all
+        variable plots (on an instance specific basis).
+
+    A plot of the variable `value_to_plot` against its shap values will be plotted.
     """
     # first, lets isolate the lists
     idx = val_list.index(value_to_plot)
