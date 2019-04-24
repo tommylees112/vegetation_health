@@ -79,7 +79,7 @@ ndvi = xr.open_dataset(DATA_DIR1 / "NDVI_EastAfrica.nc")[["ndvi", "evi"]]
 precip = xr.open_dataset(DATA_DIR2 / "EA_chirps_monthly.nc")
 
 # ------------------------------------------------------------------------------
-# Clean the data (same timesteps and same )
+# Clean the data (same timesteps and same gridsizes)
 # ------------------------------------------------------------------------------
 # RESAMPLE THE REFERENCE DATA
 precip = select_time_slice(precip, '2000-02-14','2016-12-01')
