@@ -6,6 +6,9 @@ from .base import ModelBase
 
 
 class LinearModel(ModelBase):
+    """A logistic regression, to be used as a baseline
+    against our more complex models
+    """
 
     def train(self):
 

@@ -8,39 +8,43 @@ from predictor.models import LinearModel, nn_FeedForward, nn_Recurrent
 class RunTask:
 
     @staticmethod
-    def clean(raw_filepath='data/raw/OUT.NC',
-              processed_filepath='data/processed/cleaned_data.csv',
-              target='ndvi_anomaly', pred_month=6):
+    def clean(raw_filepath='data/raw/predict_vegetation_health.nc',
+              processed_folder='data/processed',
+              target='ndvi', pred_month=6):
 
-        raw_filepath, processed_filepath = Path(raw_filepath), Path(processed_filepath)
+        raw_filepath, processed_folder = Path(raw_filepath), Path(processed_folder)
+        processed_filepath = processed_folder / target / 'cleaned_data.csv'
 
         cleaner = Cleaner(raw_filepath, processed_filepath)
         cleaner.process(pred_month, target)
 
     @staticmethod
-    def engineer(cleaned_data='data/processed/cleaned_data.csv',
-                 arrays='data/processed/arrays', test_year=2016):
+    def engineer(processed_folder='data/processed', target='ndvi',
+                 test_year=2016):
 
-        cleaned_data, arrays = Path(cleaned_data), Path(arrays)
+        processed_folder = Path(processed_folder)
+        cleaned_data = processed_folder / target / 'cleaned_data.csv'
+        arrays_folder = processed_folder / target / 'arrays'
 
-        engineer = Engineer(cleaned_data, arrays)
+        engineer = Engineer(cleaned_data, arrays_folder)
         engineer.process(test_year)
 
     @staticmethod
-    def train_model(model_type='baseline', arrays='data/processed/arrays',
-                    hide_vegetation=True):
+    def train_model(model_type='baseline', processed_folder='data/processed',
+                    target='ndvi', hide_vegetation=True, save_preds=True):
 
-        arrays = Path(arrays)
+        processed_folder = Path(processed_folder)
+        arrays_folder = processed_folder / target / 'arrays'
 
         string2model = {
-            'baseline': LinearModel(arrays, hide_vegetation),
-            'feedforward': nn_FeedForward(arrays, hide_vegetation),
-            'recurrent': nn_Recurrent(arrays, hide_vegetation),
+            'baseline': LinearModel(arrays_folder, hide_vegetation),
+            'feedforward': nn_FeedForward(arrays_folder, hide_vegetation),
+            'recurrent': nn_Recurrent(arrays_folder, hide_vegetation),
         }
 
         model = string2model[model_type]
         model.train()
-        model.evaluate()
+        model.evaluate(save_preds=save_preds)
 
 
 if __name__ == '__main__':

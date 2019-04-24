@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import datetime
 
-from predictor import CSVCleaner
+from predictor import Cleaner
 
 
 def test_year_month():
@@ -17,7 +17,7 @@ def test_year_month():
     }
     test_df = pd.DataFrame(data=test_data)
 
-    cleaner = CSVCleaner()
+    cleaner = Cleaner()
     test_df['gp_month'], test_df['gp_year'] = cleaner.update_year_month(test_df['times'],
                                                                         pred_month=5)
 

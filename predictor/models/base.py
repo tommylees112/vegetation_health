@@ -9,6 +9,17 @@ DataTuple = namedtuple('Data', ['x', 'y', 'latlon', 'years'])
 
 
 class ModelBase:
+    """Base for all machine learning models.
+
+    Attributes:
+    ----------
+    arrays: pathlib.Path
+        The location where the arrays were saved by the `Engineer` class
+    hide_vegetation: bool, default: False
+        Whether to hide vegetation-specific information from the training
+        data. This allows us to better understand how the other factors drive
+        vegetation health.
+    """
 
     def __init__(self, arrays=Path('data/processed/arrays'),
                  hide_vegetation=False):
@@ -25,12 +36,32 @@ class ModelBase:
         # arrays
         raise NotImplementedError
 
-    def evaluate(self, return_eval=False):
+    def evaluate(self, return_eval=False, save_preds=False):
+        """Evaluates the model using root mean squared error.
+        This ensures evaluation is consistent across differnet models.
+
+        Parameters:
+        ----------
+        return_eval: bool, default: False
+            Whether to return the calculated root mean squared error
+        save_preds: bool, default: False
+            Whether to save the predictions. If True, they will be saved
+            in self.arrays_path / preds.npy
+
+        Returns:
+        ----------
+        (if return_eval) test_rmse: float
+            The calculated root mean squared error for the test set
+        """
         y_true, y_pred = self.predict()
 
         test_rmse = np.sqrt(mean_squared_error(y_true, y_pred))
 
         print(f'Test set RMSE: {test_rmse}')
+
+        if save_preds:
+            print(f'Saving predictions to {self.arrays_path / "preds.npy"}')
+            np.save(self.arrays_path / 'preds.npy', y_pred)
 
         if return_eval:
             return test_rmse

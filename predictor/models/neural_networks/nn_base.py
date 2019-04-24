@@ -10,6 +10,8 @@ from ..base import ModelBase, DataTuple
 
 
 class NNBase(ModelBase):
+    """The base for neural networks models
+    """
 
     def __init__(self, model, arrays=Path('data/processed/arrays'), hide_vegetation=False):
         super().__init__(arrays, hide_vegetation)
@@ -24,6 +26,20 @@ class NNBase(ModelBase):
         self.model = model
 
     def train(self, num_epochs=100, patience=3, batch_size=32, learning_rate=1e-3):
+        """Train the neural network
+
+        Parameters
+        ----------
+        num_epochs: int
+            The maximum number of epochs to train the model for
+        patience: int
+            If no improvement is seen in the validation set for `patience` epochs,
+            training is stopped to prevent overfitting
+        batch_size: int
+            The batch size to use
+        learning_rate: float
+            The learning rate to use when updating model parameters
+        """
         train_data = self.load_tensors(mode='train')
 
         # split the data into a training and validation set
