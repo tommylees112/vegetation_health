@@ -37,7 +37,7 @@ class SpeiCleaner(Cleaner):
         self.reproject_path = Path(reproject_path)
 
 
-    def chop_EA_region(self):
+    def chop_EA_region(self, outfile_path):
         """ cheeky little bit of bash scripting with string interpolation (kids don't try this at home) """
         in_file = self.base_data_path / "holaps_reprojected.nc"
         out_file = self.base_data_path / "holaps_EA.nc"
@@ -57,6 +57,7 @@ class SpeiCleaner(Cleaner):
             re_chopped_data, msg="Opened the reprojected & chopped data"
         )
         return
+
 
     def reproject(self):
         """ reproject to WGS84 / geographic latlon """
@@ -97,7 +98,7 @@ class SpeiCleaner(Cleaner):
         return
 
     def preprocess(self):
-        # reproject the file from sinusoidal to WGS84
+        # reproject the file from sinusoidal to WGS84 / 'ESPG:4326'
         self.reproject()
         #  chop out the correct lat/lon (changes when reprojected)
         self.chop_EA_region()

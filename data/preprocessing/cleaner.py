@@ -41,7 +41,7 @@ class Cleaner:
     def __init__(self, data_path):
         self.data_path = Path(data_path)
 
-        # open the datasets using xarray 
+        # open the datasets using xarray
         self.raw_data = xr.open_dataset(self.data_path)
 
         # start with clean data as a copy of the raw data
@@ -105,7 +105,7 @@ class Cleaner:
             self.mask = self.mask.isel(time=0)
 
         masked_d = self.clean_data.where(~self.mask.values)
-        self.update_clean_data(masked_d, msg="Copied the mask from HOLAPS to GLEAM")
+        self.update_clean_data(masked_d, msg="Copied the mask from reference to dataset!")
         return
 
     def mask_illegitimate_values(self):
