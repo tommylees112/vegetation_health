@@ -37,7 +37,7 @@ def create_dataset_from_vars(vars, latlon, varname, to_xarray=True):
 
 
 def plot_results(processed_data=Path('data/processed'), target='ndvi',
-                 savefig=True):
+                 plot_difference=False, savefig=True):
     """Plots a landscape of the results (and optionally,
     of the ground truth)
     """
@@ -47,12 +47,20 @@ def plot_results(processed_data=Path('data/processed'), target='ndvi',
     latlon = np.load(processed_data / target / 'arrays/test/latlon.npy')
 
     preds_xr = create_dataset_from_vars(preds, latlon, "preds", to_xarray=True)
-    true = create_dataset_from_vars(true, latlon, "true", to_xarray=True)
+    true_xr = create_dataset_from_vars(true, latlon, "true", to_xarray=True)
 
     data_xr = xr.concat((preds_xr['preds'], true_xr['true']),
                         pd.Index(['predictions', 'ground truth'], name='data'))
 
-    data_xr.plot(x='lon', y='lat', col='data', figsize=(15, 6))
+    if plot_difference:
+        # compute the difference and create a difference plot
+        data = data_xr.data[1] - data_xr.data[0]
+        da = xr.DataArray(data, coords=[data_xr.lat, data_xr.lon], dims=['lat','lon'])
+        data_xr = da.to_dataset()
+
+        data_xr.plot(x='lon', y='lat', col='data', figsize=(15, 6))
+    else:
+        data_xr.plot(x='lon', y='lat', col='data', figsize=(15, 6))
 
     if savefig:
         plt.savefig(f'{target}_results.png', dpi=300, bbox_inches='tight')
