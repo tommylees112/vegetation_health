@@ -69,9 +69,11 @@ class Engineer:
                     continue
                 subgroup = subgroup.sort_values(by='gb_month', ascending=True)
 
+                # create a np.array of the features (VALUE_COLS) and the target
                 x = subgroup[:-1][VALUE_COLS].values
                 y = subgroup.iloc[-1]['target']
 
+                # create lists of np.arrays
                 latlons.append(latlon_np)
                 years.append(year)
                 vals.append(x)
@@ -80,7 +82,7 @@ class Engineer:
                 if len(latlons) % 1000 == 0:
                     print(f'Processed {len(latlons)} examples')
 
-        print(f'Done processing {len(latlons)} years! Skipped {skipped} years due to missing rows')
+        print(f'Done processing {len(latlons)} pixel-years! Skipped {skipped} pixel-years due to missing rows')
 
         # turn everything into np arrays for manipulation
         latlons, years, vals, targets = np.vstack(latlons), np.array(years), np.stack(vals), np.array(targets)
