@@ -56,9 +56,9 @@ def plot_results(processed_data=Path('data/processed'), target='ndvi',
         # compute the difference and create a difference plot
         data = data_xr.data[1] - data_xr.data[0]
         da = xr.DataArray(data, coords=[data_xr.lat, data_xr.lon], dims=['lat','lon'])
-        data_xr = da.to_dataset('difference')
+        ds = da.to_dataset('difference')
 
-        data_xr.difference.plot(x='lon', y='lat', figsize=(15, 6))
+        ds.difference.plot(x='lon', y='lat', figsize=(12, 8))
     else:
         data_xr.plot(x='lon', y='lat', col='data', figsize=(15, 6))
 
