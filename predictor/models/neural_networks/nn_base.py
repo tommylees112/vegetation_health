@@ -13,8 +13,9 @@ class NNBase(ModelBase):
     """The base for neural networks models
     """
 
-    def __init__(self, model, arrays=Path('data/processed/arrays'), hide_vegetation=False):
-        super().__init__(arrays, hide_vegetation)
+    def __init__(self, model, data=Path('data'), arrays=Path('data/processed/arrays'),
+                 hide_vegetation=False):
+        super().__init__(data, arrays, hide_vegetation)
 
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         # for reproducability

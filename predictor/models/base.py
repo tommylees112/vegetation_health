@@ -21,9 +21,12 @@ class ModelBase:
         vegetation health.
     """
 
-    def __init__(self, arrays=Path('data/processed/arrays'),
+    model_name = None  # to be added by the model classes
+
+    def __init__(self, data=Path('data'), arrays_path=Path('data/processed/arrays'),
                  hide_vegetation=False):
-        self.arrays_path = arrays
+        self.data_path = data
+        self.arrays_path = arrays_path
         self.hide_vegetation = hide_vegetation
         self.model = None  # to be added by the model classes
 
@@ -36,9 +39,13 @@ class ModelBase:
         # arrays
         raise NotImplementedError
 
+    def save_model(self):
+        # This method should save the model in data / model_name
+        raise NotImplementedError
+
     def evaluate(self, return_eval=False, save_preds=False):
         """Evaluates the model using root mean squared error.
-        This ensures evaluation is consistent across differnet models.
+        This ensures evaluation is consistent across different models.
 
         Parameters:
         ----------
@@ -60,8 +67,10 @@ class ModelBase:
         print(f'Test set RMSE: {test_rmse}')
 
         if save_preds:
-            print(f'Saving predictions to {self.arrays_path / "preds.npy"}')
-            np.save(self.arrays_path / 'preds.npy', y_pred)
+            savedir = self.data_path / self.model_name
+            if not savedir.exists(): savedir.mkdir()
+            print(f'Saving predictions to {savedir / "preds.npy"}')
+            np.save(savedir / 'preds.npy', y_pred)
 
         if return_eval:
             return test_rmse

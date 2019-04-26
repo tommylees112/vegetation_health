@@ -10,6 +10,8 @@ class LinearModel(ModelBase):
     against our more complex models
     """
 
+    model_name = 'linear'
+
     def train(self):
 
         train_data = self.load_arrays(mode='train')
@@ -30,3 +32,8 @@ class LinearModel(ModelBase):
         x = test_data.x.reshape(test_data.x.shape[0], -1)
         test_pred_y = self.model.predict(x)
         return test_data.y, test_pred_y
+
+    def save_model(self):
+        savedir = self.data_path / self.model_name
+        if not savedir.exists(): savedir.mkdir()
+        np.save(savedir / 'model.npy', self.model.coef_)

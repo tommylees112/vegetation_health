@@ -10,7 +10,8 @@ class FeedForward(NNBase):
     """A simple feedforward neural network
     """
 
-    def __init__(self, arrays=Path('data/processed/arrays'), hide_vegetation=False):
+    def __init__(self, data=Path('data'), arrays=Path('data/processed/arrays'),
+                 hide_vegetation=False):
 
         features_per_month = len(VALUE_COLS)
         if hide_vegetation:
@@ -19,7 +20,7 @@ class FeedForward(NNBase):
         num_features = features_per_month * 11
 
         super().__init__(LinearModel(num_features, [num_features], 0.25),
-                         arrays, hide_vegetation)
+                         data, arrays, hide_vegetation)
 
 
 class LinearModel(nn.Module):

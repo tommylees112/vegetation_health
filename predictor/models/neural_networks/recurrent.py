@@ -12,14 +12,15 @@ class Recurrent(NNBase):
     """A simple feedforward neural network
     """
 
-    def __init__(self, arrays=Path('data/processed/arrays'), hide_vegetation=False):
+    def __init__(self, data=Path('data'), arrays=Path('data/processed/arrays'),
+                 hide_vegetation=False):
 
         features_per_month = len(VALUE_COLS)
         if hide_vegetation:
             features_per_month -= len(VEGETATION_LABELS)
 
         super().__init__(RNN(features_per_month, [256]),
-                         arrays, hide_vegetation)
+                         data, arrays, hide_vegetation)
 
 
 class RNN(nn.Module):

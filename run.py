@@ -30,21 +30,23 @@ class RunTask:
         engineer.process(test_year)
 
     @staticmethod
-    def train_model(model_type='baseline', processed_folder='data/processed',
-                    target='ndvi', hide_vegetation=True, save_preds=True):
+    def train_model(model_type='baseline', data_folder='data',
+                    target='ndvi', hide_vegetation=True, save_results=True):
 
-        processed_folder = Path(processed_folder)
-        arrays_folder = processed_folder / target / 'arrays'
+        data_folder = Path(data_folder)
+        arrays_folder = data_folder / 'processed' / target / 'arrays'
 
         string2model = {
-            'baseline': LinearModel(arrays_folder, hide_vegetation),
-            'feedforward': nn_FeedForward(arrays_folder, hide_vegetation),
-            'recurrent': nn_Recurrent(arrays_folder, hide_vegetation),
+            'baseline': LinearModel(data_folder, arrays_folder, hide_vegetation),
+            'feedforward': nn_FeedForward(data_folder, arrays_folder, hide_vegetation),
+            'recurrent': nn_Recurrent(data_folder, arrays_folder, hide_vegetation),
         }
 
         model = string2model[model_type]
         model.train()
-        model.evaluate(save_preds=save_preds)
+        model.evaluate(save_preds=save_results)
+        if save_results:
+            model.save_model()
 
 
 if __name__ == '__main__':
