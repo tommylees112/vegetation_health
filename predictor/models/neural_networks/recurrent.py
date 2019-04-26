@@ -21,7 +21,7 @@ class Recurrent(NNBase):
 
         super().__init__(RNN(features_per_month, [256]),
                          data, arrays, hide_vegetation)
-
+        self.model_name = "recurrent"
 
 class RNN(nn.Module):
     """
