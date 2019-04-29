@@ -21,7 +21,7 @@ class FeedForward(NNBase):
 
         super().__init__(LinearModel(num_features, [num_features], 0.25),
                          data, arrays, hide_vegetation)
-
+        self.model_name = "feedforward"
 
 class LinearModel(nn.Module):
 

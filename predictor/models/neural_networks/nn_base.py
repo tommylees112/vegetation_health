@@ -132,3 +132,10 @@ class NNBase(ModelBase):
                 years=data.years,
                 x=torch.as_tensor(data.x, device=self.device).float(),
                 y=torch.as_tensor(data.y, device=self.device).float())
+
+    def save_model(self):
+        """save the model's state_dict"""
+        savedir = self.data_path / self.model_name
+        if not savedir.exists(): savedir.mkdir()
+        torch.save(self.model, savedir / 'model.pt')
+        return
