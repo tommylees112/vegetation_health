@@ -10,3 +10,4 @@ temp.py
 *.nc
 test.py
 *.json
+docs/
