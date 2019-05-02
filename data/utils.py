@@ -151,27 +151,6 @@ def read_data(data_path='.', mask_var='spi'):
     return ds, lc_mask, drought_mask
 
 
-def print_shift_explanation(ds):
-    """ print statements to explain the differences with the shift operator """
-    print("*** UNSHIFTED TIME ***")
-    print("time=0\n", ds.isel(lat=slice(0,2), lon=slice(0,2),time=0).precip.values)
-    print("time=1\n", ds.isel(lat=slice(0,2), lon=slice(0,2),time=1).precip.values)
-    print("time=2\n",ds.isel(lat=slice(0,2), lon=slice(0,2), time=2).precip.values)
-    print("time=3\n",ds.isel(lat=slice(0,2), lon=slice(0,2), time=3).precip.values)
-    print()
-    print("*** SHIFTED TIME (+1) = moving the HISTORICAL TIMESTEPS FORWARD to the PRESENT ***")
-    print("time=0\n",ds.isel(lat=slice(0,2), lon=slice(0,2)).shift(time=1).isel(time=0).precip.values)
-    print("time=1\n",ds.isel(lat=slice(0,2), lon=slice(0,2)).shift(time=1).isel(time=1).precip.values)
-    print("time=2\n",ds.isel(lat=slice(0,2), lon=slice(0,2)).shift(time=1).isel(time=2).precip.values)
-    print("time=3\n",ds.isel(lat=slice(0,2), lon=slice(0,2)).shift(time=1).isel(time=3).precip.values)
-    print()
-    print("*** SHIFTED TIME (-1) = moving the PRESENT TIMESTEPS BACKWARD to the PAST ***")
-    print("time=0\n",ds.isel(lat=slice(0,2), lon=slice(0,2)).shift(time=-1).isel(time=0).precip.values)
-    print("time=1\n",ds.isel(lat=slice(0,2), lon=slice(0,2)).shift(time=-1).isel(time=1).precip.values)
-    print("time=2\n",ds.isel(lat=slice(0,2), lon=slice(0,2)).shift(time=-1).isel(time=2).precip.values)
-    print("time=3\n",ds.isel(lat=slice(0,2), lon=slice(0,2)).shift(time=-1).isel(time=3).precip.values)
-    print()
-
 # ----------------------------------------------------------------------
 def create_lc_mask(ds):
     """ from the dataset create a landcover mask """

@@ -228,7 +228,7 @@ def get_holaps_mask(ds):
 
 
 def select_east_africa(ds):
-    """ """
+    """ select East Africa from your xr.Dataset .nc file"""
     lonmin=32.6
     lonmax=51.8
     latmin=-5.0

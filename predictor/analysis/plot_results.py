@@ -5,35 +5,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 
-def create_dataset_from_vars(vars, latlon, varname, to_xarray=True):
-    """ Convert the variables from `np.array` to `pd.DataFrame`
-    and optionally `xr.Dataset`. By default converts to `xr.Dataset`
-
-    Arguments:
-    ---------
-    : vars (np.array)
-        the values of the variable of interest (e.g. Predictions of NDVI from model)
-
-    : latlon (np.array)
-        the latlon location for each of the values in vars
-
-    : varname (str)
-        the name of the variable
-
-    TODO:
-    ----
-    * Implement a method that works with TIME so that the xarray objects
-        have a time dimension too
-    """
-    assert len(vars) == len(latlon), f"The length of the latlons array should be the same as the legnth of the vars array. Currently latlons: {len(latlon)} vars: {len(vars)}"
-
-
-    df = pd.DataFrame(data={varname: vars, 'lat': latlon[:, 0],
-                      'lon': latlon[:, 1]}).set_index(['lat', 'lon'])
-    if to_xarray:
-        return df.to_xarray()
-    else:
-        return df
 
 
 def plot_results(processed_data=Path('data/processed'), target='ndvi',

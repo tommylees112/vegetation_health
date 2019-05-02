@@ -11,3 +11,4 @@ temp.py
 test.py
 *.json
 docs/
+plots/*.png
